@@ -4,7 +4,7 @@ function(TemplateNode){
 	
 	function PrimitiveNode(configuration, accessKey){
 		//call super class constructor
-		schemaFactories.SchemaTemplateNode.apply(this, arguments);
+		TemplateNode.apply(this, arguments);
 
 	}
 

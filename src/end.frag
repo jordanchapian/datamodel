@@ -1,3 +1,3 @@
 	//above
-    return require('schema/schemaAPI');
+    return require('datamodel');
 }));

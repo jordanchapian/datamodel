@@ -1,9 +1,10 @@
-define('schema/schemaAPI',
+define('schema/schemaCollection',
 ['util/is', 'util/set', 'info', 'schema/Schema'],
 function(is, set, info, Schema){
 	var schemaMap = {};
 
 	var api = {};
+	
 	//public exposure
 	api.addSchema = function(schemaKey, schemaDefinition){
 		//defend input (must have at least a path key to complete action)

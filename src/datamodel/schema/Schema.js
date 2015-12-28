@@ -8,7 +8,7 @@ function(info, is, SchemaTemplate){
 			//the key assigned to this schema
 			key:key,
 
-			//a store of the provided configuration
+			//c store of the provided configuration
 			template:null,
 
 			//map of virtual properties
@@ -26,7 +26,7 @@ function(info, is, SchemaTemplate){
 			info.warn('Template definition base must be an object or an array. Definition not assigned.');
 			return this;
 		}
-		else if(this._.templateDefinition !== null){
+		else if(this._.template !== null){
 			info.warn('Overwriting template definition for ['+this._.key+'] multiple times. Behavior may difficult to predict.');	
 		}
 		
@@ -35,13 +35,6 @@ function(info, is, SchemaTemplate){
 
 		return this;
 	};
-
-	
-	Schema.prototype.applyTo = function(data){
-		console.log(this._)
-		this._.template.applyTo(data);
-	};
-
 
 	/*----------  virtuals  ----------*/
 	

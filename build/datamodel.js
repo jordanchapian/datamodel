@@ -508,7 +508,7 @@ define('util/set', [],
 define('option/info',[],
 {
 	
-	logPrefix : 'Datasync::',
+	logPrefix : 'datamodel::',
 	logEnabled : true
 	
 });
@@ -545,6 +545,32 @@ function(is, infoOptions){
 
 	return info;
 });
+define('util/schema',
+[	
+	'util/is'
+],
+function(is){
+
+	var api = {};
+	var validPrimitives = [ String, Boolean, Date, Number ];
+
+	api.isPrimitive = function(config){
+		//handle configuration object and basic function cases
+		return ((is.Function(config) && validPrimitives.indexOf(config) != -1)
+					 || (is.Object(config) && config._type !== undefined));
+	};
+
+	api.isCollection = function(config){
+		return (is.Array(config));
+	};
+
+	api.isSchema = function(config){
+		return (is.Object(config) && config._type === undefined);
+	};
+
+
+	return api;
+});
 define('schema/template/node/TemplateNode',
 ['util/is', 'util/schema'],
 function(is, schemaUtil){
@@ -561,17 +587,7 @@ function(is, schemaUtil){
 	}
 	
 	/*----------  class methods  ----------*/
-	TemplateNode.prototype.isPrimitive = function(){
-		return this instanceof schemaFactories.STN_Primitive;
-	};
-
-	TemplateNode.prototype.isCollection = function(){
-		return this instanceof schemaFactories.STN_Collection;
-	};
-
-	TemplateNode.prototype.isSchema = function(){
-		return this instanceof schemaFactories.STN_Schema;
-	};
+	
 
 	/*----------  utils  ----------*/
 	
@@ -580,20 +596,20 @@ function(is, schemaUtil){
 	}
 
 	function assignChildren(self){
-		var config = self._.config;
-		
-		//we just create a single child, and that is the iterative relationship
-		if(schemaUtil.isCollection(config) && config.length > 0){
-			var childConstructor = schemaUtil.getNodeConstructor(config[0]);
-			self._.children.push( new childConstructor(config[0]) );
-		}
-		//a schema is to need to create child nodes for each of it's first level properties
-		else if(schemaUtil.isSchema(config)){
-			for(var key in config){
-				var childConstructor = schemaUtil.getNodeConstructor(config[key]);
-				self._.children.push( new childConstructor(config[key], key) );
-			}
-		}
+		// var config = self._.config;
+
+		// //we just create a single child, and that is the iterative relationship
+		// if(schemaUtil.isCollection(config) && config.length > 0){
+		// 	var childConstructor = schemaUtil.getNodeConstructor(config[0]);
+		// 	self._.children.push( new childConstructor(config[0]) );
+		// }
+		// //a schema is to need to create child nodes for each of it's first level properties
+		// else if(schemaUtil.isSchema(config)){
+		// 	for(var key in config){
+		// 		var childConstructor = schemaUtil.getNodeConstructor(config[key]);
+		// 		self._.children.push( new childConstructor(config[key], key) );
+		// 	}
+		// }
 	}
 
 	return TemplateNode;
@@ -604,7 +620,7 @@ function(TemplateNode){
 	
 	function CollectionNode(configuration, accessKey){
 		//call super class constructor
-		schemaFactories.SchemaTemplateNode.apply(this, arguments);
+		TemplateNode.apply(this, arguments);
 
 	}
 
@@ -622,7 +638,7 @@ function(TemplateNode){
 	
 	function PrimitiveNode(configuration, accessKey){
 		//call super class constructor
-		schemaFactories.SchemaTemplateNode.apply(this, arguments);
+		TemplateNode.apply(this, arguments);
 
 	}
 
@@ -640,7 +656,7 @@ function(TemplateNode){
 	
 	function SchemaNode(configuration, accessKey){
 		//call super class constructor
-		schemaFactories.SchemaTemplateNode.apply(this, arguments);
+		TemplateNode.apply(this, arguments);
 
 	}
 
@@ -652,43 +668,17 @@ function(TemplateNode){
 	return SchemaNode;
 
 });
-define('util/schema',
-[	
-	'schema/template/node/CollectionNode',
-	'schema/template/node/PrimitiveNode',
-	'schema/template/node/SchemaNode',
-	'util/is'
-],
-function(CollectionNode, PrimitiveNode, SchemaNode, is){
-
-	var utils = {};
-	var validPrimitives = [ String, Boolean, Date, Number ];
-
-	utils.getNodeConstructor = function(config){
-		if(utils.isPrimitive(config)) return PrimitiveNode;
-		else if(utils.isCollection(config)) return CollectionNode;
-		else if(utils.isSchema(config)) return SchemaNode;
-		else return undefined;
-	};
-
-	utils.isPrimitive = function(config){
-		//handle configuration object and basic function cases
-		return ((is.Function(config) && validPrimitives.indexOf(config) != -1)
-					 || (is.Object(config) && config._type !== undefined));
-	};
-
-	utils.isCollection = function(config){
-		return (is.Array(config));
-	};
-
-	utils.isSchema = function(config){
-		return (is.Object(config) && config._type === undefined);
-	};
-
-});
 define('schema/template/SchemaTemplate',
-['util/is','util/schema', 'schema/template/node/TemplateNode'],
-function(is, schemaUtil, TemplateNode){
+[	
+
+	'util/is',
+	'util/schema', 
+	'./node/CollectionNode',
+	'./node/PrimitiveNode',
+	'./node/SchemaNode'
+
+],
+function(is, schemaUtil, CollectionNode, PrimitiveNode, SchemaNode){
 	
 	function SchemaTemplate(config){
 
@@ -709,10 +699,16 @@ function(is, schemaUtil, TemplateNode){
 	function init(self){
 		//initialize the root of the schema configuration
 		//(this is a recursive operation)
-		var rootContructor = schemaUtil.getNodeConstructor(self._.config);
+		var rootContructor = getNodeConstructor(self._.config);
 		self._.root = new rootContructor(self._.config);
-	}
 
+	}
+	function getNodeConstructor(config){
+		if(schemaUtil.isPrimitive(config)) return PrimitiveNode;
+		else if(schemaUtil.isCollection(config)) return CollectionNode;
+		else if(schemaUtil.isSchema(config)) return SchemaNode;
+		else return undefined;
+	};
 	//expose to namespace
 	return SchemaTemplate;
 
@@ -728,7 +724,7 @@ function(info, is, SchemaTemplate){
 			//the key assigned to this schema
 			key:key,
 
-			//a store of the provided configuration
+			//c store of the provided configuration
 			template:null,
 
 			//map of virtual properties
@@ -746,7 +742,7 @@ function(info, is, SchemaTemplate){
 			info.warn('Template definition base must be an object or an array. Definition not assigned.');
 			return this;
 		}
-		else if(this._.templateDefinition !== null){
+		else if(this._.template !== null){
 			info.warn('Overwriting template definition for ['+this._.key+'] multiple times. Behavior may difficult to predict.');	
 		}
 		
@@ -755,13 +751,6 @@ function(info, is, SchemaTemplate){
 
 		return this;
 	};
-
-	
-	Schema.prototype.applyTo = function(data){
-		console.log(this._)
-		this._.template.applyTo(data);
-	};
-
 
 	/*----------  virtuals  ----------*/
 	
@@ -805,12 +794,13 @@ function(info, is, SchemaTemplate){
 
 
 
-define('schema/schemaAPI',
+define('schema/schemaCollection',
 ['util/is', 'util/set', 'info', 'schema/Schema'],
 function(is, set, info, Schema){
 	var schemaMap = {};
 
 	var api = {};
+	
 	//public exposure
 	api.addSchema = function(schemaKey, schemaDefinition){
 		//defend input (must have at least a path key to complete action)
@@ -838,9 +828,31 @@ function(is, set, info, Schema){
 });
 define('datamodel',
 [
-	'schema/schemaAPI'
+	'schema/schemaCollection',
+	'util/is',
+	'schema/Schema'
 ],
-{});
+function(schemaCollection, is, Schema){
+	
+	return function(schemaName, schemaConfig){
+		//normalize input to def
+		if(schemaName !== undefined && is.String(schemaName) === false){
+			schemaConfig = schemaName;
+			schemaName = undefined;
+		}
+
+		//if we want just an instance template
+		if(schemaName === undefined){
+			return (new Schema(schemaName,schemaConfig));
+		}
+		//if we want to get/set from a collection
+		else if(is.String(schemaName)){
+			return schemaCollection.getSchema(schemaName)
+							|| schemaCollection.addSchema(schemaName, schemaConfig);
+		}
+
+	};
+});
 	//above
-    return require('schema/schemaAPI');
+    return require('datamodel');
 }));
