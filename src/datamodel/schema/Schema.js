@@ -1,4 +1,7 @@
-(function(schemaFactory, info, is){
+define('schema/Schema',
+['info','util/is', 'schema/template/SchemaTemplate'],
+function(info, is, SchemaTemplate){
+
 	function Schema(key, config){
 		//private collections
 		this._ = {
@@ -6,7 +9,6 @@
 			key:key,
 
 			//a store of the provided configuration
-			templateDefinition:null,
 			template:null,
 
 			//map of virtual properties
@@ -29,8 +31,7 @@
 		}
 		
 		//initialize references to this new template definition
-		this._.templateDefinition = templateDefinition;
-		this._.template = (new schemaFactory.SchemaTemplate(templateDefinition));
+		this._.template = (new SchemaTemplate(templateDefinition));
 
 		return this;
 	};
@@ -79,10 +80,7 @@
 		}
 	};
 
-	schemaFactory.Schema = Schema;
+	return Schema;
+});
 
-})(
-	_private('schema.factory'),
-	_private('info'),
-	_private('util.is')
-);
+

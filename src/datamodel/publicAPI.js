@@ -1,0 +1,4 @@
+define('publicAPI', [], function(){
+
+	return {};
+});

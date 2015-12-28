@@ -1,60 +1,21 @@
 module.exports = function(grunt) {
 
   grunt.initConfig({
-    watch: {
-      scripts: {
-        files: ['src/**/*.js'],
-        tasks: ['concat'],
+
+    requirejs: {
+      compile: {
         options: {
-          spawn: false,
-        },
-      },
-    },
-    jasmine: {
-      all: {
-        src: 'build/datasync_test.js',
-        options: {
-          specs: 'src/**/*.spec.js'
-        //   helpers: 'spec/*Helper.js'
+          optimize: "none",
+          almond: true,
+          out: "./build/datamodel.js",
+          name: "../../node_modules/almond/almond",
+          baseUrl: "./src/datamodel",
+          include:['datamodel'],
+          wrap: {
+              startFile: "src/start.frag",
+              endFile: "src/end.frag"
+          }
         }
-      }
-    },
-    concat: {
-      globalBuild: {
-        src: [
-          './src/env_intro.js',
-          //temporary order dependency TODO:Module loader
-          './src/datasync/schema/SchemaTemplate/SchemaTemplateNode/SchemaTemplateNode.js',
-          './src/datasync/**/*.js',
-          './src/env_outro_global.js',
-
-          '!./src/datasync/**/*.spec.js'
-        ],
-        dest: 'build/datasync_global.js'
-      },
-      isolateBuild:{
-        src: [
-          './src/env_intro.js',
-          //temporary order dependency TODO:Module loader
-          './src/datasync/schema/SchemaTemplate/SchemaTemplateNode/SchemaTemplateNode.js',
-          './src/datasync/**/*.js',
-          './src/env_outro_isolate.js',
-
-          '!./src/datasync/**/*.spec.js'
-        ],
-        dest: 'build/datasync_isolate.js'
-      },
-      testBuild:{
-        src: [
-          './src/env_intro.js',
-          //temporary order dependency TODO:Module loader
-          './src/datasync/schema/SchemaTemplate/SchemaTemplateNode/SchemaTemplateNode.js',
-          './src/datasync/**/*.js',
-          './src/env_outro_test.js',
-
-          '!./src/datasync/**/*.spec.js'
-        ],
-        dest: 'build/datasync_test.js'
       }
     }
   });
@@ -63,8 +24,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-jasmine');
+  grunt.loadNpmTasks('grunt-contrib-requirejs');
 
-  grunt.registerTask('default', ['concat']);
-  grunt.registerTask('test', ['concat', 'jasmine']);
-  grunt.registerTask('dev', ['watch']);
+  grunt.registerTask('default', ['requirejs']);
+  // grunt.registerTask('test', ['concat', 'jasmine']);
+  // grunt.registerTask('dev', ['watch']);
 };

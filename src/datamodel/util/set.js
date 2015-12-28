@@ -1,6 +1,6 @@
-(function(set){
-
-	set.values = function(obj){
+define('util/set', [],
+{
+	values:function(obj){
 		var output = [];
 		for (var key in obj) {
 		    if (Object.prototype.hasOwnProperty.call(obj, key)) {
@@ -9,9 +9,8 @@
 		}
 
 		return output;
-	};
-
-	set.argsToArray = function(argumentObject){
+	},
+	argsToArray:function(argumentObject){
 		var outputArray = [];
 
 		for(var i = 0; i < argumentObject.length; i++){
@@ -19,6 +18,5 @@
 		}
 
 		return outputArray;
-	};
-
-})(_private('util.set'));
+	}
+});

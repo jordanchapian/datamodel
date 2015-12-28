@@ -8,81 +8,9 @@
 <body>
 	
 
-	<script src='../build/datasync_global.js'></script>
+	<script src='../build/datamodel.js'></script>
 	<script>
-
-
-		var d = Datasync
-		.addSchema('Jordan')
-			.setTemplate([{
-				name:{_type: String, required:true},
-				nHits:{_type: Number, required:true},
-				date:{_type: Date, required:true},
-
-				days:[],
-
-				daysUnder:[String]
-			}])
-
-			.addVirtual('name')
-			(function(instanceOb){
-
-			});
-
-		Datasync
-		.addDatapath('Jordan')
-			.setRoute('http://www.test.com/some/simple/datapath/:param')
-			.useSchema('schemaName')
-			.setCacheSize(5)
-
-		.addFormatter(function(e){
-
-		})
-		
-		.addFiller(function(dataset){
-
-		})	
-
-		.addSubset('name')
-		(function(){
-
-		})
-
-		.addTransform('someName')
-		(function(d){
-			return {test:'test', datasetSize:d.length};
-		});
-
-
-		// Datasync.setParameter('param', 1);
-		// Datasync.ensureSynced('Jordan');
-
-		// //this will create another new frame (2)
-		// Datasync.setParameter('param', 2);
-		// Datasync.ensureSynced('Jordan');
-
-		// //now, the make the first frame valid again
-		// Datasync.setParameter('param', 1);
-		// Datasync.ensureSynced('Jordan');
-
-		// console.log(Datasync.getData('Jordan'));
-		/*============================
-		=            TODO            =
-		============================*/
-		//syntax that allows extending pipeline results is desired:
-		// .addSubset('name')
-		// 	.toSubset('someOtherSubset')
-		// 	(function(){
-
-		// 	})
-		
-
-		// .addTransform('transformName')
-		// 	.toSubset('someSubset')
-		// 	(function(){
-
-		// 	})
-		/*=====  End of TODO  ======*/
+		// console.log(datamodel);
 	</script>
 </body>
 </html>

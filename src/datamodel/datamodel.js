@@ -1,0 +1,5 @@
+define('datamodel',
+[
+	'schema/schemaAPI'
+],
+{});
