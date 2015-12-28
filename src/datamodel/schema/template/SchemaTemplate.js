@@ -57,14 +57,14 @@ function(is, schemaUtil, CollectionNode, PrimitiveNode, SchemaNode){
 		assignChildren(self, self._.root, self._.config);
 	}
 
-
-
 	function getNodeConstructor(config){
 		if(schemaUtil.isPrimitive(config)) return PrimitiveNode;
 		else if(schemaUtil.isCollection(config)) return CollectionNode;
 		else if(schemaUtil.isSchema(config)) return SchemaNode;
 		else return undefined;
 	};
+
+	
 	//expose to namespace
 	return SchemaTemplate;
 

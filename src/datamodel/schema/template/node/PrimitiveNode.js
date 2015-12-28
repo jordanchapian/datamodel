@@ -4,7 +4,7 @@ function(TemplateNode){
 	
 	function PrimitiveNode(configuration, accessKey){
 		//call super class constructor
-		TemplateNode.apply(this, arguments);
+		TemplateNode.apply(this, [configuration]);
 
 	}
 

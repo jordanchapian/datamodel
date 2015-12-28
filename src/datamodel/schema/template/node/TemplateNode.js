@@ -6,7 +6,7 @@ define('schema/template/node/TemplateNode',
 ],
 function(is, schemaUtil, info){
 	
-	function TemplateNode(configuration, accessKey){
+	function TemplateNode(configuration){
 		
 		this._ = {
 			config:configuration,
@@ -28,5 +28,9 @@ function(is, schemaUtil, info){
 
 	};
 
+	TemplateNode.prototype.getChildren = function(){
+		return this._.children;
+	};
+	
 	return TemplateNode;
 });
