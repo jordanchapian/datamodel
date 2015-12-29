@@ -20,6 +20,15 @@ function(info, is, SchemaTemplate){
 		if(config !== undefined)
 			this.setTemplate(config);
 	}
+	Schema.prototype.validate = function(datum){
+		if(this._.template === null){
+			info.warn('Schema is not yet initialized with a template. Cannot validate dataset.');
+			return false;
+		}
+		else{
+			return this._.template.validate(datum);
+		}
+	};
 
 	Schema.prototype.setTemplate = function(templateDefinition){
 		if(is.Object(templateDefinition) === false && is.Array(templateDefinition) === false){

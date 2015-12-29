@@ -22,13 +22,20 @@ function(is, schemaUtil, CollectionNode, PrimitiveNode, SchemaNode){
 	}
 
 	/*----------  class methods  ----------*/
-	
+	SchemaTemplate.prototype.validate = function(datum){
+		if(this._.root === null){
+			return false;
+		}
+		
+		else return this._.root.validate(datum);
+	};
 	/*----------  static methods  ----------*/
 	
 	/*----------  utils  ----------*/
-	function assignChildren(self, root, config){
+
+	function assignChildren(self, root, config, accessKey){
 		var configNodeConstructor = getNodeConstructor(config);
-		var newNode = new configNodeConstructor(config);
+		var newNode = new configNodeConstructor(config, accessKey);
 		
 		//determine where to add the child
 		if(root === null) self._.root = root = newNode;
@@ -46,7 +53,7 @@ function(is, schemaUtil, CollectionNode, PrimitiveNode, SchemaNode){
 		else if(configNodeConstructor === SchemaNode){
 
 			for(var key in config){
-				assignChildren(self, newNode, config[key]);
+				assignChildren(self, newNode, config[key], key);
 			}
 
 		}

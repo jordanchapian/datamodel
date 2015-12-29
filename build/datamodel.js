@@ -583,7 +583,8 @@ function(is, schemaUtil, info){
 		
 		this._ = {
 			config:configuration,
-			children:[]
+			children:[],
+			accessKey:accessKey
 		};
 
 	}
@@ -601,58 +602,143 @@ function(is, schemaUtil, info){
 
 	};
 
+	TemplateNode.prototype.getAccessKey = function(){
+		return this._.accessKey;
+	};
+
+	TemplateNode.prototype.getChildren = function(){
+		return this._.children;
+	};
+	
 	return TemplateNode;
 });
 define('schema/template/node/CollectionNode',
-['schema/template/node/TemplateNode'],
-function(TemplateNode){
+[
+	'schema/template/node/TemplateNode',
+	'util/is'
+],
+function(TemplateNode, is){
 	
 	function CollectionNode(configuration, accessKey){
 		//call super class constructor
 		TemplateNode.apply(this, arguments);
-
 	}
 
 	/*----------  inherit properties from super class  ----------*/
 	CollectionNode.prototype = Object.create(TemplateNode.prototype);
 	CollectionNode.prototype.constructor = CollectionNode;
 
+	CollectionNode.prototype.validate = function(datum){
+		//datum must be an array
+		if(is.Array(datum) === false) return false;
+		//do we need to go further to validate each element?
+		else if(this.getChildren().length === 1)
+		{
+			for(var i = 0; i < datum.length; i++){
+				//bail if we have a single failed result
+				if(this.getChildren()[0].validate(datum[i]) === false){
+					return false;
+				};
+			}
+
+			//if we passed all above validations, we are ok.
+			return true;
+		}	
+		//validation complete if we do not have any additional specs...
+		//if we do not specify what must be in the array, we do not care.
+		else return true;
+	};
+
 	
 	return CollectionNode;
 
 });
 define('schema/template/node/PrimitiveNode',
-['schema/template/node/TemplateNode'],
-function(TemplateNode){
+[
+	'schema/template/node/TemplateNode',
+	'util/is'
+],
+function(TemplateNode, is){
 	
-	function PrimitiveNode(configuration, accessKey){
+	function PrimitiveNode(config, accessKey){
 		//call super class constructor
 		TemplateNode.apply(this, arguments);
 
+		this._.type = is.Function(config) ? config : config._value;
 	}
 
 	/*----------  inherit properties from super class  ----------*/
 	PrimitiveNode.prototype = Object.create(TemplateNode.prototype);
 	PrimitiveNode.prototype.constructor = PrimitiveNode;
 
-	
+	PrimitiveNode.prototype.validate = function(datum){
+		if(this._.type === String && is.String(datum) === false)
+			return false;
+		else if(this._.type === Boolean && is.Boolean(datum) === false)
+			return false;
+		else if(this._.type === Date && is.Date(datum) === false)
+			return false;
+		else if(this._.type === Number && is.Number(datum) === false)
+			return false;
+		else 
+			return true;
+	};
+
 	return PrimitiveNode;
 
 });
 define('schema/template/node/SchemaNode',
-['schema/template/node/TemplateNode'],
-function(TemplateNode){
+[
+	'./TemplateNode',
+	'util/is'
+],
+function(TemplateNode, is){
 	
 	function SchemaNode(configuration, accessKey){
 		//call super class constructor
 		TemplateNode.apply(this, arguments);
-
+		
+		//property scratch pad
+		this._.hasProperty = {};
+		this._.nProperties = 0;
 	}
 
 	/*----------  inherit properties from super class  ----------*/
 	SchemaNode.prototype = Object.create(TemplateNode.prototype);
 	SchemaNode.prototype.constructor = SchemaNode;
+	
+	SchemaNode.prototype.addChild = function(node){
+		TemplateNode.prototype.addChild.apply(this, [node]);
 
+		this._.hasProperty[node._.accessKey] = true;
+		this._.nProperties++;
+	};
+
+	SchemaNode.prototype.validate = function(datum){
+		//are we dealing with data of type Object?
+		if(is.Object(datum) === false) return false;
+		
+		//ensure that all keys on this object are those specified by the object
+		var nValid = 0;
+		for(var key in datum){
+			if(datum[key] === false)return false;
+			else nValid++;
+		}
+
+		//ensure that we have used all properties...
+		if(this._.nProperties !== nValid) return false;
+
+		//pass down to each child for further validation
+		var childNodes = this.getChildren();
+		for(var i = 0; i < childNodes.length; i++){
+			//bail if we have a single failed result
+			if(childNodes[i].validate(datum[childNodes[i].getAccessKey()]) === false){
+				return false;
+			};
+		}
+
+		return true;
+	};
 	
 	return SchemaNode;
 
@@ -681,13 +767,20 @@ function(is, schemaUtil, CollectionNode, PrimitiveNode, SchemaNode){
 	}
 
 	/*----------  class methods  ----------*/
-	
+	SchemaTemplate.prototype.validate = function(datum){
+		if(this._.root === null){
+			return false;
+		}
+		
+		else return this._.root.validate(datum);
+	};
 	/*----------  static methods  ----------*/
 	
 	/*----------  utils  ----------*/
-	function assignChildren(self, root, config){
+
+	function assignChildren(self, root, config, accessKey){
 		var configNodeConstructor = getNodeConstructor(config);
-		var newNode = new configNodeConstructor(config);
+		var newNode = new configNodeConstructor(config, accessKey);
 		
 		//determine where to add the child
 		if(root === null) self._.root = root = newNode;
@@ -705,7 +798,7 @@ function(is, schemaUtil, CollectionNode, PrimitiveNode, SchemaNode){
 		else if(configNodeConstructor === SchemaNode){
 
 			for(var key in config){
-				assignChildren(self, newNode, config[key]);
+				assignChildren(self, newNode, config[key], key);
 			}
 
 		}
@@ -716,14 +809,14 @@ function(is, schemaUtil, CollectionNode, PrimitiveNode, SchemaNode){
 		assignChildren(self, self._.root, self._.config);
 	}
 
-
-
 	function getNodeConstructor(config){
 		if(schemaUtil.isPrimitive(config)) return PrimitiveNode;
 		else if(schemaUtil.isCollection(config)) return CollectionNode;
 		else if(schemaUtil.isSchema(config)) return SchemaNode;
 		else return undefined;
 	};
+
+	
 	//expose to namespace
 	return SchemaTemplate;
 
@@ -751,6 +844,15 @@ function(info, is, SchemaTemplate){
 		if(config !== undefined)
 			this.setTemplate(config);
 	}
+	Schema.prototype.validate = function(datum){
+		if(this._.template === null){
+			info.warn('Schema is not yet initialized with a template. Cannot validate dataset.');
+			return false;
+		}
+		else{
+			return this._.template.validate(datum);
+		}
+	};
 
 	Schema.prototype.setTemplate = function(templateDefinition){
 		if(is.Object(templateDefinition) === false && is.Array(templateDefinition) === false){
