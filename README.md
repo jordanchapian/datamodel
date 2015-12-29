@@ -10,6 +10,71 @@ Primitives are the most basic element, and end recursive checks. You use primiti
 ```javascript
 datamodel('personName')
 .setTemplate(String);
+```
+###Example:An array of strings
+```javascript
+datamodel('personName')
+.setTemplate([String]);
+```
+
+###Example:An array objects with a string property
+```javascript
+datamodel('personName')
+.setTemplate([{ name:String }]);
+```
+
+##Schema Pattern
+A schema definition has a similar meaning to what what is understood as the Object javascript primitive. It is a definition of a key/value data structure, and uses the Object primitive syntax for defining the pattern. Nested schemas are supported for complex objects.
+
+###Example: A basic schema
+```javascript
+datamodel('person')
+.setTemplate({
+	name:String,
+	age:Number
+});
+```
+
+###Example: A nested Schema
+```javascript
+datamodel('person')
+.setTemplate({
+	name:String,
+	details:{
+		age:Number
+	}
+});
+```
+
+
+## Collection Pattern
+A collection defines repetition in a data set. The collection is denoted with the array primitive syntax.
+
+###Example: Describing an array of simple objects
+```javascript
+datamodel('pageHits')
+.setTemplate([{
+	name:String,
+	hits:[Number]
+}]);
+```
+
+###Example: Describe a simple object with an array
+```javascript
+datamodel('myHits')
+.setTemplate({
+	name:String,
+	hits:[Number]
+});
+```
+
+#Validating Against Models
+##Examples
+
+###Example 1:
+```javascript
+datamodel('personName')
+.setTemplate(String);
 
 var ValidData = "Jordan";
 var InvalidData = 23; //wrong type...
@@ -20,7 +85,8 @@ datamodel('personName')
 datamodel('personName')
 .validate(InvalidData); //false
 ```
-###Example:An array of strings
+
+###Example 2:
 ```javascript
 datamodel('personName')
 .setTemplate([String]);
@@ -34,8 +100,7 @@ datamodel('personName')
 datamodel('personName')
 .validate(InvalidData); //false
 ```
-
-###Example:An array objects with a string property
+###Example 3:
 ```javascript
 datamodel('personName')
 .setTemplate([{name:String}]);
@@ -50,10 +115,7 @@ datamodel('personName')
 .validate(InvalidData); //false
 ```
 
-##Schema Pattern
-A schema definition has a similar meaning to what what is understood as the Object javascript primitive. It is a definition of a key/value data structure, and uses the Object primitive syntax for defining the pattern. Nested schemas are supported for complex objects.
-
-###Example: A basic schema
+###Example 4:
 ```javascript
 datamodel('person')
 .setTemplate({
@@ -71,7 +133,7 @@ datamodel('person')
 .validate(InvalidData); //false
 ```
 
-###Example: A nested Schema
+###Example 5:
 ```javascript
 datamodel('person')
 .setTemplate({
@@ -91,11 +153,7 @@ datamodel('person')
 .validate(InvalidData); //false
 ```
 
-
-## Collection Pattern
-A collection defines repetition in a data set. The collection is denoted with the array primitive syntax.
-
-###Example: Describing an array of simple objects
+###Example 6:
 ```javascript
 datamodel('pageHits')
 .setTemplate([{
@@ -113,7 +171,7 @@ datamodel('pageHits')
 .validate(InvalidDataset); //false
 ```
 
-###Example: Describe a simple object with an array
+###Example 7:
 ```javascript
 datamodel('myHits')
 .setTemplate({
@@ -130,8 +188,3 @@ datamodel('myHits')
 datamodel('myHits')
 .validate(InvalidDataset); //false
 ```
-
-
-
-#Schema Representation
-
