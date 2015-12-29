@@ -1,21 +1,18 @@
 {
-  "name": "Datasync",
+  "name": "datamodel",
   "version": "0.0.1",
-  "description": "The Data API State Machine",
-  "main": "Gruntfile.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "description": "Javascript data schemas. Validate data structures, ensure data types, assign virtual methods to datum, generate virtual properties for a data set.",
+  "main": "build/datamodel.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jordanchapian/datasync.git"
+    "url": "https://github.com/jordanchapian/datamodel.git"
   },
   "author": "Jordan Chapian",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jordanchapian/datasync/issues"
+    "url": "https://github.com/jordanchapian/datamodel/issues"
   },
-  "homepage": "https://github.com/jordanchapian/datasync",
+  "homepage": "https://github.com/jordanchapian/datamodel",
   "devDependencies": {
     "almond": "^0.3.1",
     "grunt": "^0.4.5",
