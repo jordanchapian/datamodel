@@ -1,6 +1,22 @@
 module.exports = function(grunt) {
 
   grunt.initConfig({
+    
+    jasmine : {
+      functional:{
+        src : './src/datamodel/**/*.js',
+        options : {
+            outfile:'./test/functionalTests.html',
+            specs : './test/functional/**/*.spec.js',
+            template: require('grunt-template-jasmine-requirejs'),
+            templateOptions: {
+                requireConfig: {
+                    baseUrl: '../'
+                }
+            }
+        }
+      }
+    },
 
     requirejs: {
       compile: {
@@ -18,6 +34,7 @@ module.exports = function(grunt) {
         }
       }
     }
+
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -27,6 +44,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-requirejs');
 
   grunt.registerTask('default', ['requirejs']);
-  // grunt.registerTask('test', ['concat', 'jasmine']);
+  grunt.registerTask('test', ['jasmine']);
   // grunt.registerTask('dev', ['watch']);
 };
