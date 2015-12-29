@@ -3,11 +3,11 @@ Javascript data schemas. Validate data structures, ensure data types, assign vir
 # Installing
 ## Via Bower
 ```bash
-bower install datamodel --save
+bower install datamodel.js --save
 ```
 ## Via NPM
 ```bash
-npm install datamodel --save
+npm install datamodel.js --save
 ```
 
 # Creating a Dataset Model
