@@ -1,0 +1,22 @@
+.DS_Store
+.AppleDouble
+.LSOverride
+
+
+# ignore npm modules and bower components
+node_modules/
+bower_components/
+
+#build directory
+build
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
+.grunt
+
+# node-waf configuration
+.lock-wscript
