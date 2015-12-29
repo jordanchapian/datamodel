@@ -6,7 +6,7 @@ The dataset schema is to define what the expected format of a dataset is to be. 
 ## Collection Pattern
 A collection defines repetition in a data set. The collection is denoted with the array primitive syntax:
 
-''''javascript
+```javascript
 datamodel('pageHits')
 .setTemplate([{
 	name:String,
@@ -21,5 +21,5 @@ datamodel('pageHits')
 
 datamodel('pageHits')
 .validate(InvalidDataset); //false
-''''
+```
 
