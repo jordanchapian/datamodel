@@ -1,5 +1,14 @@
 # datamodel
 Javascript data schemas. Validate data structures, ensure data types, assign virtual methods, generate virtual properties for a data set.
+# Installing
+## Via Bower
+```bash
+bower install datamodel --save
+```
+## Via NPM
+```bash
+npm install datamodel --save
+```
 
 # Creating a Dataset Model
 The dataset schema is to define what the expected format of a dataset is to be. There are three patterns that are used: Collections, Schemas (and nested schemas), and primitives. Further, there are two ways to define a schema: Caching, or instance.
