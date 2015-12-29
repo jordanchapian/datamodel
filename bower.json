@@ -1,0 +1,17 @@
+{
+  "name": "datamodel",
+  "description": "Javascript data schemas. Validate data structures, ensure data types, assign virtual methods to datum, generate virtual properties for a data set.",
+  "main": "build/datamodel.js",
+  "authors": [
+    "Jordan Chapian"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/jordanchapian/datamodel",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test"
+  ]
+}
