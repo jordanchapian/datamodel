@@ -7,6 +7,7 @@ module.exports = function(grunt) {
         src : './src/datamodel/**/*.js',
         options : {
             outfile:'./test/functionalTests.html',
+            keepRunner:true,
             specs : './test/functional/**/*.spec.js',
             template: require('grunt-template-jasmine-requirejs'),
             templateOptions: {
