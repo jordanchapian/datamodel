@@ -52,8 +52,39 @@ function(datamodel){
 		});
 
 		describe('Collection Pattern', function(){
+
+			it('should validate primitive collection', function(){
+				var dm = datamodel().setTemplate([String]);
+
+				expect(dm.validate(["test"])).toBeTruthy();
+				expect(dm.validate(["test", "testttt"])).toBeTruthy();
+				expect(dm.validate([12])).toBeFalsy();
+				expect(dm.validate('test')).toBeFalsy();
+			});
+
+			it('should validate collection of schemas', function(){
+				var dm = datamodel().setTemplate([{data:String}]);
+
+				expect(dm.validate([{data: "test"},{data: "test"}])).toBeTruthy();
+				expect(dm.validate(['test'])).toBeFalsy();
+			});
+
+			it('should validate nested collections of primitives', function(){
+				var dm = datamodel().setTemplate([[String]]);
+
+				expect(dm.validate([['test'],['testtt','test','testt']])).toBeTruthy();
+			});
+
+			it('should validate nested collections of schemas', function(){
+				var dm = datamodel().setTemplate([[{data:String}]]);
+
+				expect(dm.validate([[{data:'test'}],[{data:'test'},{data:'test'},{data:'test'}]])).toBeTruthy();
+			});
 			
 		});
 		
+		describe('Schema Pattern', function(){
+			
+		});
 	});
 });
