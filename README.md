@@ -1,8 +1,54 @@
 # datamodel
 Javascript data schemas. Validate data structures, ensure data types, assign virtual methods, generate virtual properties for a data set.
 
-# Creating a Dataset Schema
+# Creating a Dataset Model
 The dataset schema is to define what the expected format of a dataset is to be. There are three patterns that are used: Collections, Schemas (and nested schemas), and primitives. Further, there are two ways to define a schema: Caching, or instance.
+## Primitive Pattern
+Primitives are the most basic element, and end recursive checks. You use primitives to define the type pattern required for proper use.
+
+###Example:A string
+```javascript
+datamodel('personName')
+.setTemplate(String);
+
+var ValidData = "Jordan";
+var InvalidData = 23; //wrong type...
+
+datamodel('personName')
+.validate(ValidData); //true
+
+datamodel('personName')
+.validate(InvalidData); //false
+```
+###Example:An array of strings
+```javascript
+datamodel('personName')
+.setTemplate([String]);
+
+var ValidData = ["Jordan", "Chapian"];
+var InvalidData = [23, "Jordan"]; //wrong type
+
+datamodel('personName')
+.validate(ValidData); //true
+
+datamodel('personName')
+.validate(InvalidData); //false
+```
+
+###Example:An array objects with a string property
+```javascript
+datamodel('personName')
+.setTemplate([{name:String}]);
+
+var ValidData = [{name:"Jordan"}, {name:"Chapian"}];
+var InvalidData = [{name:"Jordan"}, "Jordan"]; //wrong type
+
+datamodel('personName')
+.validate(ValidData); //true
+
+datamodel('personName')
+.validate(InvalidData); //false
+```
 
 ##Schema Pattern
 A schema definition has a similar meaning to what what is understood as the Object javascript primitive. It is a definition of a key/value data structure, and uses the Object primitive syntax for defining the pattern. Nested schemas are supported for complex objects.
@@ -36,7 +82,7 @@ datamodel('person')
 });
 
 var ValidData = {name:'Jordan', details:{age:10}};
-var InvalidData = {name:'Jordan', details:{age:"10"}}; //missing age..
+var InvalidData = {name:'Jordan', details:{age:"10"}}; //age, wrong type..
 
 datamodel('person')
 .validate(ValidData); //true
