@@ -1,18 +1,18 @@
 {
-  "name": "datamodel.js",
+  "name": "datapath.js",
   "version": "0.0.1",
   "description": "Javascript data schemas. Validate data structures, ensure data types, assign virtual methods to datum, generate virtual properties for a data set.",
-  "main": "build/datamodel.js",
+  "main": "build/datapath.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jordanchapian/datamodel.git"
+    "url": "https://github.com/jordanchapian/datapath.js.git"
   },
   "author": "Jordan Chapian",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jordanchapian/datamodel/issues"
+    "url": "https://github.com/jordanchapian/datapath.js/issues"
   },
-  "homepage": "https://github.com/jordanchapian/datamodel",
+  "homepage": "https://github.com/jordanchapian/datapath.js",
   "devDependencies": {
     "almond": "^0.3.1",
     "grunt": "^0.4.5",
