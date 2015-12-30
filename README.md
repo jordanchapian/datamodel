@@ -15,27 +15,27 @@ The dataset schema is to define what the expected format of a dataset is to be. 
 ## Primitive Pattern
 Primitives are the most basic element, and end recursive checks. You use primitives to define the type pattern required for proper use.
 
-###Example:A string
+### Example:A string
 ```javascript
 datamodel('personName')
 .setTemplate(String);
 ```
-###Example:An array of strings
+### Example:An array of strings
 ```javascript
 datamodel('personName')
 .setTemplate([String]);
 ```
 
-###Example:An array objects with a string property
+### Example:An array objects with a string property
 ```javascript
 datamodel('personName')
 .setTemplate([{ name:String }]);
 ```
 
-##Schema Pattern
+## Schema Pattern
 A schema definition has a similar meaning to what what is understood as the Object javascript primitive. It is a definition of a key/value data structure, and uses the Object primitive syntax for defining the pattern. Nested schemas are supported for complex objects.
 
-###Example: A basic schema
+### Example: A basic schema
 ```javascript
 datamodel('person')
 .setTemplate({
@@ -44,7 +44,7 @@ datamodel('person')
 });
 ```
 
-###Example: A nested Schema
+### Example: A nested Schema
 ```javascript
 datamodel('person')
 .setTemplate({
@@ -59,7 +59,7 @@ datamodel('person')
 ## Collection Pattern
 A collection defines repetition in a data set. The collection is denoted with the array primitive syntax.
 
-###Example: Describing an array of simple objects
+### Example: Describing an array of simple objects
 ```javascript
 datamodel('pageHits')
 .setTemplate([{
@@ -68,7 +68,7 @@ datamodel('pageHits')
 }]);
 ```
 
-###Example: Describe a simple object with an array
+### Example: Describe a simple object with an array
 ```javascript
 datamodel('myHits')
 .setTemplate({
@@ -77,10 +77,10 @@ datamodel('myHits')
 });
 ```
 
-#Validating Against Models
-##Examples
+# Validating Against Models
+## Examples
 
-###Example 1:
+### Example 1:
 ```javascript
 datamodel('personName')
 .setTemplate(String);
@@ -95,7 +95,7 @@ datamodel('personName')
 .validate(InvalidData); //false
 ```
 
-###Example 2:
+### Example 2:
 ```javascript
 datamodel('personName')
 .setTemplate([String]);
@@ -109,7 +109,7 @@ datamodel('personName')
 datamodel('personName')
 .validate(InvalidData); //false
 ```
-###Example 3:
+### Example 3:
 ```javascript
 datamodel('personName')
 .setTemplate([{name:String}]);
@@ -124,7 +124,7 @@ datamodel('personName')
 .validate(InvalidData); //false
 ```
 
-###Example 4:
+### Example 4:
 ```javascript
 datamodel('person')
 .setTemplate({
@@ -142,7 +142,7 @@ datamodel('person')
 .validate(InvalidData); //false
 ```
 
-###Example 5:
+### Example 5:
 ```javascript
 datamodel('person')
 .setTemplate({
@@ -162,7 +162,7 @@ datamodel('person')
 .validate(InvalidData); //false
 ```
 
-###Example 6:
+### Example 6:
 ```javascript
 datamodel('pageHits')
 .setTemplate([{
@@ -180,7 +180,7 @@ datamodel('pageHits')
 .validate(InvalidDataset); //false
 ```
 
-###Example 7:
+### Example 7:
 ```javascript
 datamodel('myHits')
 .setTemplate({
@@ -197,3 +197,25 @@ datamodel('myHits')
 datamodel('myHits')
 .validate(InvalidDataset); //false
 ```
+
+# Internal Representation
+A graph is used to represent a data structure, where each node is represented by one of three subclasses of a TemplateNode. Recursive patterns are used to traverse the structures. Consider the below model specification.
+
+```javascript
+datamodel('users')
+.setTemplate([{
+    name:String,
+    email:String,
+    posts:[{
+    	title:String,
+    	views:Number,
+    	body:Number,
+    	posted:Date
+    }],
+    loginPosts:[[Number]]
+}]);
+```
+
+This is represented by the following graph structure:
+
+![gs](https://cloud.githubusercontent.com/assets/4266628/12045502/e5153cd4-ae72-11e5-8597-8efce10f8691.jpg)
