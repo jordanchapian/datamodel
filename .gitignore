@@ -7,9 +7,6 @@
 node_modules/
 bower_components/
 
-#build directory
-build
-
 # Logs
 logs
 *.log
@@ -20,3 +17,6 @@ npm-debug.log*
 
 # node-waf configuration
 .lock-wscript
+
+example
+test/*.html

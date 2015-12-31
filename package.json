@@ -1,6 +1,6 @@
 {
-  "name": "datamodel.js",
-  "version": "0.0.1",
+  "name": "data-model",
+  "version": "0.0.2",
   "description": "Javascript data schemas. Validate data structures, ensure data types, assign virtual methods to datum, generate virtual properties for a data set.",
   "main": "build/datamodel.js",
   "repository": {
