@@ -1,10 +1,11 @@
 define('datamodel',
 [
 	'schema/schemaCollection',
+	'type/collection',
 	'util/is',
 	'schema/Schema'
 ],
-function(schemaCollection, is, Schema){
+function(schemaCollection,typeCollection, is, Schema){
 	
 	return function(schemaName, schemaConfig){
 		//normalize input to def
