@@ -1,7 +1,7 @@
 define('type/collection',
 [
 	'type/Type',
-	'type/Number'
+	'type/config/Number'
 ],
 function(Type){
 
