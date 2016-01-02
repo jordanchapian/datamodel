@@ -2,9 +2,21 @@ define('type/Type',[],
 function(){
 	
 	function Type(config){
+		this._ = {
+			accessor : config.accessorAlias || {},
+			isValid : config.isValid,
+			name : config.name
+		};
 
-		this._.accessor = config.accessorAlias || {};
 	}
+
+	Type.prototype.getAccessor = function(){
+		return this._.accessor;
+	};
+
+	Type.prototype.getName = function(){
+		return this._.name;
+	};
 
 	return Type;
 

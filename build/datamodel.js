@@ -955,9 +955,21 @@ define('type/Type',[],
 function(){
 	
 	function Type(config){
+		this._ = {
+			accessor : config.accessorAlias || {},
+			isValid : config.isValid,
+			name : config.name
+		};
 
-		this._.accessor = config.accessorAlias || {};
 	}
+
+	Type.prototype.getAccessor = function(){
+		return this._.accessor;
+	};
+
+	Type.prototype.getName = function(){
+		return this._.name;
+	};
 
 	return Type;
 
@@ -989,29 +1001,87 @@ function(is){
 	};
 
 });
+define('type/config/Date',['util/is'],
+function(is){
+
+	return {
+		//the name associated with this type...
+		name:'Date',
+
+		//the accessor is what is used to identify a type
+		//custom types expose some kind of accessor, and
+		//expose these under types like datapath.types.ObjectId
+		accessorAlias:Date,
+
+		//the options that this type accepts
+		options:['range'],
+
+		//this is required for validation.
+		//the datum to be validated is passed in as the first argument
+		//and the options specified for the schema primitive are passed in
+		//so that decisions can be made dynamically...
+		isValid:function(datum, options){
+			return is.Date(datum);
+		}
+
+	};
+
+});
+define('type/config/String',['util/is'],
+function(is){
+
+	return {
+		//the name associated with this type...
+		name:'String',
+
+		//the accessor is what is used to identify a type
+		//custom types expose some kind of accessor, and
+		//expose these under types like datapath.types.ObjectId
+		accessorAlias:String,
+
+		//the options that this type accepts
+		options:['range'],
+
+		//this is required for validation.
+		//the datum to be validated is passed in as the first argument
+		//and the options specified for the schema primitive are passed in
+		//so that decisions can be made dynamically...
+		isValid:function(datum, options){
+			return is.String(datum);
+		}
+
+	};
+
+});
+//all imports after info are to be type configurations
 define('type/collection',
 [
 	'type/Type',
-	'type/config/Number'
+	'info',
+	'util/set',
+
+	'type/config/Number',
+	'type/config/Date',
+	'type/config/String'
 ],
-function(Type){
+function(Type, info, set){
 
 	var types = {};
-	
-	//set up the collection based on the stored configurations
-	for(var i = 1; i < arguments.length; i++){
 
-		if(validTypeConfig(arguments[i])){
+	//set up the collection based on the stored configurations
+	for(var i = 3; i < arguments.length; i++){
+		//are we overwriting another type?
+		if(types[arguments[i].name]){
+			info.warn('Overwriting type names');
+		}
+		//we are ok
+		else{
 			types[arguments[i].name] = new Type(arguments[i]);
 		}
-		else{
-
-		}
-
 	}
 
 
-	return types;
+	return set.values(types);
 
 
 	/*----------  utils  ----------*/
@@ -1030,7 +1100,7 @@ define('datamodel',
 ],
 function(schemaCollection,typeCollection, is, Schema){
 	
-	return function(schemaName, schemaConfig){
+	function DatamodelPublicApi(schemaName, schemaConfig){
 		//normalize input to def
 		if(schemaName !== undefined && is.String(schemaName) === false){
 			schemaConfig = schemaName;
@@ -1048,6 +1118,16 @@ function(schemaCollection,typeCollection, is, Schema){
 		}
 
 	};
+	
+
+	//extend api with static methods that will allow users to reference types
+	DatamodelPublicApi.type = {};
+
+	typeCollection.forEach(function(type){
+		DatamodelPublicApi.type[type.getName()] = type.getAccessor();
+	});
+
+	return DatamodelPublicApi
 });
 	//above
     return require('datamodel');

@@ -7,7 +7,7 @@ define('datamodel',
 ],
 function(schemaCollection,typeCollection, is, Schema){
 	
-	return function(schemaName, schemaConfig){
+	function DatamodelPublicApi(schemaName, schemaConfig){
 		//normalize input to def
 		if(schemaName !== undefined && is.String(schemaName) === false){
 			schemaConfig = schemaName;
@@ -25,4 +25,14 @@ function(schemaCollection,typeCollection, is, Schema){
 		}
 
 	};
+	
+
+	//extend api with static methods that will allow users to reference types
+	DatamodelPublicApi.type = {};
+
+	typeCollection.forEach(function(type){
+		DatamodelPublicApi.type[type.getName()] = type.getAccessor();
+	});
+
+	return DatamodelPublicApi
 });

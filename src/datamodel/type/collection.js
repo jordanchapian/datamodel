@@ -1,32 +1,31 @@
+//all imports after info are to be type configurations
 define('type/collection',
 [
 	'type/Type',
-	'type/config/Number'
+	'info',
+	'util/set',
+
+	'type/config/Number',
+	'type/config/Date',
+	'type/config/String'
 ],
-function(Type){
+function(Type, info, set){
 
 	var types = {};
-	
-	//set up the collection based on the stored configurations
-	for(var i = 1; i < arguments.length; i++){
 
-		if(validTypeConfig(arguments[i])){
+	//set up the collection based on the stored configurations
+	for(var i = 3; i < arguments.length; i++){
+		//are we overwriting another type?
+		if(types[arguments[i].name]){
+			info.warn('Overwriting type names');
+		}
+		//we are ok
+		else{
 			types[arguments[i].name] = new Type(arguments[i]);
 		}
-		else{
-
-		}
-
 	}
 
 
-	return types;
-
-
-	/*----------  utils  ----------*/
-	
-	function validTypeConfig(typeConfig){
-		return true;
-	}
+	return set.values(types);
 
 })
