@@ -11,21 +11,43 @@ define('type/collection',
 ],
 function(Type, info, set){
 
-	var types = {};
+	var types_map = {},
+			types_arr = [];
 
 	//set up the collection based on the stored configurations
 	for(var i = 3; i < arguments.length; i++){
 		//are we overwriting another type?
-		if(types[arguments[i].name]){
+		if(types_map[arguments[i].name]){
 			info.warn('Overwriting type names');
 		}
 		//we are ok
 		else{
-			types[arguments[i].name] = new Type(arguments[i]);
+			types_map[arguments[i].name] = new Type(arguments[i]);
 		}
 	}
+	
+	//store a type array accessor
+	types_arr = set.values(types);
 
+	//expose an api to collection
+	var api = {};
 
-	return set.values(types);
+	api.get = function(){
+		return types_arr;
+	};
+
+	api.get_fromAlias = function(aliasFN){
+		
+		for(var i = 0; i < types_arr.length; i++){
+			if(types_arr[i].getAccessor() === aliasFN) return types_arr[i];
+		}
+
+	};
+
+	api.get_fromName = function(name){
+		return types_map[name];
+	};	
+
+	return api;
 
 })

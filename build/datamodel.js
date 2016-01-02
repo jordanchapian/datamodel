@@ -553,16 +553,166 @@ function(is, infoOptions){
 
 	return info;
 });
+define('type/Type',[],
+function(){
+	
+	function Type(config){
+		this._ = {
+			accessor : config.accessorAlias || function(){},
+			isValid : config.isValid,
+			name : config.name
+		};
+
+	}
+
+	Type.prototype.getAccessor = function(){
+		return this._.accessor;
+	};
+
+	Type.prototype.getName = function(){
+		return this._.name;
+	};
+
+	return Type;
+
+});
+//types are for primitives...
+define('type/config/Number',['util/is'],
+function(is){
+
+	return {
+		//the name associated with this type...
+		name:'Number',
+
+		//the accessor is what is used to identify a type
+		//custom types expose some kind of accessor, and
+		//expose these under types like datapath.types.ObjectId
+		accessorAlias:Number,
+
+		//the options that this type accepts
+		options:['range'],
+
+		//this is required for validation.
+		//the datum to be validated is passed in as the first argument
+		//and the options specified for the schema primitive are passed in
+		//so that decisions can be made dynamically...
+		isValid:function(datum, options){
+			return is.Number(datum);
+		}
+
+	};
+
+});
+define('type/config/Date',['util/is'],
+function(is){
+
+	return {
+		//the name associated with this type...
+		name:'Date',
+
+		//the accessor is what is used to identify a type
+		//custom types expose some kind of accessor, and
+		//expose these under types like datapath.types.ObjectId
+		accessorAlias:Date,
+
+		//the options that this type accepts
+		options:['range'],
+
+		//this is required for validation.
+		//the datum to be validated is passed in as the first argument
+		//and the options specified for the schema primitive are passed in
+		//so that decisions can be made dynamically...
+		isValid:function(datum, options){
+			return is.Date(datum);
+		}
+
+	};
+
+});
+define('type/config/String',['util/is'],
+function(is){
+
+	return {
+		//the name associated with this type...
+		name:'String',
+
+		//the accessor is what is used to identify a type
+		//custom types expose some kind of accessor, and
+		//expose these under types like datapath.types.ObjectId
+		accessorAlias:String,
+
+		//the options that this type accepts
+		options:['range'],
+
+		//this is required for validation.
+		//the datum to be validated is passed in as the first argument
+		//and the options specified for the schema primitive are passed in
+		//so that decisions can be made dynamically...
+		isValid:function(datum, options){
+			return is.String(datum);
+		}
+
+	};
+
+});
+//all imports after info are to be type configurations
+define('type/collection',
+[
+	'type/Type',
+	'info',
+	'util/set',
+
+	'type/config/Number',
+	'type/config/Date',
+	'type/config/String'
+],
+function(Type, info, set){
+
+	var types = {};
+
+	//set up the collection based on the stored configurations
+	for(var i = 3; i < arguments.length; i++){
+		//are we overwriting another type?
+		if(types[arguments[i].name]){
+			info.warn('Overwriting type names');
+		}
+		//we are ok
+		else{
+			types[arguments[i].name] = new Type(arguments[i]);
+		}
+	}
+	
+	var api = {};
+
+	api.get = function(){
+		return set.values(types);
+	};
+
+	return api;
+
+});
 define('util/schema',
 [	
-	'util/is'
+	'util/is',
+	'type/collection'
 ],
-function(is){
+function(is, typeCollection){
 
 	var api = {};
 	var validPrimitives = [ String, Boolean, Date, Number ];
 
 	api.isPrimitive = function(config){
+		var type;
+
+		//need to determine if this method 0, (just specifying type alias)
+		if(is.Function(config)){
+			
+		}
+		//or if this is mehthod 1, specifying a _type with options in an object
+		else if(is.Object(config)){
+
+		}
+
 		//handle configuration object and basic function cases
 		return ((is.Function(config) && validPrimitives.indexOf(config) != -1)
 					 || (is.Object(config) && config._type !== undefined));
@@ -951,146 +1101,6 @@ function(is, set, info, Schema){
 
 	return api;
 });
-define('type/Type',[],
-function(){
-	
-	function Type(config){
-		this._ = {
-			accessor : config.accessorAlias || {},
-			isValid : config.isValid,
-			name : config.name
-		};
-
-	}
-
-	Type.prototype.getAccessor = function(){
-		return this._.accessor;
-	};
-
-	Type.prototype.getName = function(){
-		return this._.name;
-	};
-
-	return Type;
-
-});
-//types are for primitives...
-define('type/config/Number',['util/is'],
-function(is){
-
-	return {
-		//the name associated with this type...
-		name:'Number',
-
-		//the accessor is what is used to identify a type
-		//custom types expose some kind of accessor, and
-		//expose these under types like datapath.types.ObjectId
-		accessorAlias:Number,
-
-		//the options that this type accepts
-		options:['range'],
-
-		//this is required for validation.
-		//the datum to be validated is passed in as the first argument
-		//and the options specified for the schema primitive are passed in
-		//so that decisions can be made dynamically...
-		isValid:function(datum, options){
-			return is.Number(datum);
-		}
-
-	};
-
-});
-define('type/config/Date',['util/is'],
-function(is){
-
-	return {
-		//the name associated with this type...
-		name:'Date',
-
-		//the accessor is what is used to identify a type
-		//custom types expose some kind of accessor, and
-		//expose these under types like datapath.types.ObjectId
-		accessorAlias:Date,
-
-		//the options that this type accepts
-		options:['range'],
-
-		//this is required for validation.
-		//the datum to be validated is passed in as the first argument
-		//and the options specified for the schema primitive are passed in
-		//so that decisions can be made dynamically...
-		isValid:function(datum, options){
-			return is.Date(datum);
-		}
-
-	};
-
-});
-define('type/config/String',['util/is'],
-function(is){
-
-	return {
-		//the name associated with this type...
-		name:'String',
-
-		//the accessor is what is used to identify a type
-		//custom types expose some kind of accessor, and
-		//expose these under types like datapath.types.ObjectId
-		accessorAlias:String,
-
-		//the options that this type accepts
-		options:['range'],
-
-		//this is required for validation.
-		//the datum to be validated is passed in as the first argument
-		//and the options specified for the schema primitive are passed in
-		//so that decisions can be made dynamically...
-		isValid:function(datum, options){
-			return is.String(datum);
-		}
-
-	};
-
-});
-//all imports after info are to be type configurations
-define('type/collection',
-[
-	'type/Type',
-	'info',
-	'util/set',
-
-	'type/config/Number',
-	'type/config/Date',
-	'type/config/String'
-],
-function(Type, info, set){
-
-	var types = {};
-
-	//set up the collection based on the stored configurations
-	for(var i = 3; i < arguments.length; i++){
-		//are we overwriting another type?
-		if(types[arguments[i].name]){
-			info.warn('Overwriting type names');
-		}
-		//we are ok
-		else{
-			types[arguments[i].name] = new Type(arguments[i]);
-		}
-	}
-
-
-	return set.values(types);
-
-
-	/*----------  utils  ----------*/
-	
-	function validTypeConfig(typeConfig){
-		return true;
-	}
-
-});
 define('datamodel',
 [
 	'schema/schemaCollection',
@@ -1123,7 +1133,8 @@ function(schemaCollection,typeCollection, is, Schema){
 	//extend api with static methods that will allow users to reference types
 	DatamodelPublicApi.type = {};
 
-	typeCollection.forEach(function(type){
+	typeCollection.get()
+	.forEach(function(type){
 		DatamodelPublicApi.type[type.getName()] = type.getAccessor();
 	});
 

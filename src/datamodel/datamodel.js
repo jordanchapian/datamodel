@@ -30,7 +30,8 @@ function(schemaCollection,typeCollection, is, Schema){
 	//extend api with static methods that will allow users to reference types
 	DatamodelPublicApi.type = {};
 
-	typeCollection.forEach(function(type){
+	typeCollection.get()
+	.forEach(function(type){
 		DatamodelPublicApi.type[type.getName()] = type.getAccessor();
 	});
 

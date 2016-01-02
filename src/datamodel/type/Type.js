@@ -3,7 +3,7 @@ function(){
 	
 	function Type(config){
 		this._ = {
-			accessor : config.accessorAlias || {},
+			accessor : config.accessorAlias || function(){},
 			isValid : config.isValid,
 			name : config.name
 		};
