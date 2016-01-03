@@ -12,17 +12,13 @@ function(is, typeCollection){
 		var type;
 
 		//need to determine if this method 0, (just specifying type alias)
-		if(is.Function(config)){
-			
+		if(is.Function(config) && typeCollection.get_fromAlias(config) !== undefined){
+			return true;
 		}
 		//or if this is mehthod 1, specifying a _type with options in an object
-		else if(is.Object(config)){
-
+		else if(is.Object(config) && config._type !== undefined && typeCollection.get_fromAlias(config._type) !== undefined){
+			return true;
 		}
-
-		//handle configuration object and basic function cases
-		return ((is.Function(config) && validPrimitives.indexOf(config) != -1)
-					 || (is.Object(config) && config._type !== undefined));
 	};
 
 	api.isCollection = function(config){

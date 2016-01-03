@@ -9,6 +9,10 @@ function(){
 		};
 
 	}
+	
+	Type.prototype.validate = function(datum){
+		return this._.isValid(datum);
+	};
 
 	Type.prototype.getAccessor = function(){
 		return this._.accessor;

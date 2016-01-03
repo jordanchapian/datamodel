@@ -564,6 +564,10 @@ function(){
 		};
 
 	}
+	
+	Type.prototype.validate = function(datum){
+		return this._.isValid(datum);
+	};
 
 	Type.prototype.getAccessor = function(){
 		return this._.accessor;
@@ -655,6 +659,32 @@ function(is){
 	};
 
 });
+define('type/config/Boolean',['util/is'],
+function(is){
+
+	return {
+		//the name associated with this type...
+		name:'Boolean',
+
+		//the accessor is what is used to identify a type
+		//custom types expose some kind of accessor, and
+		//expose these under types like datapath.types.ObjectId
+		accessorAlias:Boolean,
+
+		//the options that this type accepts
+		options:['range'],
+
+		//this is required for validation.
+		//the datum to be validated is passed in as the first argument
+		//and the options specified for the schema primitive are passed in
+		//so that decisions can be made dynamically...
+		isValid:function(datum, options){
+			return is.Boolean(datum);
+		}
+
+	};
+
+});
 //all imports after info are to be type configurations
 define('type/collection',
 [
@@ -664,29 +694,47 @@ define('type/collection',
 
 	'type/config/Number',
 	'type/config/Date',
-	'type/config/String'
+	'type/config/String',
+	'type/config/Boolean'
 ],
 function(Type, info, set){
 
-	var types = {};
+	var types_map = {},
+			types_arr = [];
 
 	//set up the collection based on the stored configurations
 	for(var i = 3; i < arguments.length; i++){
 		//are we overwriting another type?
-		if(types[arguments[i].name]){
+		if(types_map[arguments[i].name]){
 			info.warn('Overwriting type names');
 		}
 		//we are ok
 		else{
-			types[arguments[i].name] = new Type(arguments[i]);
+			types_map[arguments[i].name] = new Type(arguments[i]);
 		}
 	}
 	
+	//store a type array accessor
+	types_arr = set.values(types_map);
+
+	//expose an api to collection
 	var api = {};
 
 	api.get = function(){
-		return set.values(types);
+		return types_arr;
 	};
+
+	api.get_fromAlias = function(aliasFN){
+		
+		for(var i = 0; i < types_arr.length; i++){
+			if(types_arr[i].getAccessor() === aliasFN) return types_arr[i];
+		}
+
+	};
+
+	api.get_fromName = function(name){
+		return types_map[name];
+	};	
 
 	return api;
 
@@ -705,17 +753,13 @@ function(is, typeCollection){
 		var type;
 
 		//need to determine if this method 0, (just specifying type alias)
-		if(is.Function(config)){
-			
+		if(is.Function(config) && typeCollection.get_fromAlias(config) !== undefined){
+			return true;
 		}
 		//or if this is mehthod 1, specifying a _type with options in an object
-		else if(is.Object(config)){
-
+		else if(is.Object(config) && config._type !== undefined && typeCollection.get_fromAlias(config._type) !== undefined){
+			return true;
 		}
-
-		//handle configuration object and basic function cases
-		return ((is.Function(config) && validPrimitives.indexOf(config) != -1)
-					 || (is.Object(config) && config._type !== undefined));
 	};
 
 	api.isCollection = function(config){
@@ -814,15 +858,16 @@ function(TemplateNode, is){
 define('schema/template/node/PrimitiveNode',
 [
 	'schema/template/node/TemplateNode',
+	'type/collection',
 	'util/is'
 ],
-function(TemplateNode, is){
+function(TemplateNode, typeCollection, is){
 	
 	function PrimitiveNode(config, accessKey){
 		//call super class constructor
 		TemplateNode.apply(this, arguments);
 
-		this._.type = is.Function(config) ? config : config._value;
+		this._.type = typeCollection.get_fromAlias((is.Function(config) ? config : config._value));
 	}
 
 	/*----------  inherit properties from super class  ----------*/
@@ -830,16 +875,8 @@ function(TemplateNode, is){
 	PrimitiveNode.prototype.constructor = PrimitiveNode;
 
 	PrimitiveNode.prototype.validate = function(datum){
-		if(this._.type === String && is.String(datum) === false)
-			return false;
-		else if(this._.type === Boolean && is.Boolean(datum) === false)
-			return false;
-		else if(this._.type === Date && is.Date(datum) === false)
-			return false;
-		else if(this._.type === Number && is.Number(datum) === false)
-			return false;
-		else 
-			return true;
+		if(!this._.type) return false;
+		else return this._.type.validate(datum);
 	};
 
 	return PrimitiveNode;

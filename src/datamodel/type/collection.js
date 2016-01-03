@@ -7,7 +7,8 @@ define('type/collection',
 
 	'type/config/Number',
 	'type/config/Date',
-	'type/config/String'
+	'type/config/String',
+	'type/config/Boolean'
 ],
 function(Type, info, set){
 
@@ -27,7 +28,7 @@ function(Type, info, set){
 	}
 	
 	//store a type array accessor
-	types_arr = set.values(types);
+	types_arr = set.values(types_map);
 
 	//expose an api to collection
 	var api = {};
